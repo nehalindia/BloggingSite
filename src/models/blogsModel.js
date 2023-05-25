@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 const author = require("./authorModel")
 
-const blogSchema = new mongoose.Schema({
-    
+const blogSchema = new mongoose.Schema({    
         title : {
             type : String,
             required : true
@@ -17,7 +16,7 @@ const blogSchema = new mongoose.Schema({
             required : true,
             
         },
-        tax : {
+        tags : {
             type : [String],
         },
         category : {
