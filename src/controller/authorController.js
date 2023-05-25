@@ -7,7 +7,6 @@ async function createAuthor(req,res){
     } catch (error) {
         res.status(500).send({msg : error.message})
     }
-
 }
 
 

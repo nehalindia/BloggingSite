@@ -1,0 +1,10 @@
+git pull 
+git push to main
+git checkout to main
+git add .
+git commit 
+git push to main
+
+
+//copy from main
+git pull origin main
