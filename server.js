@@ -6,7 +6,7 @@ const app = express()
 dotenv.config()
 
 const mongoose = require('mongoose')
-mongoose.connect('mongodb+srv://avenger:9179677895@cluster0.oh25cr9.mongodb.net/blogingSite?retryWrites=true&w=majority').then(
+mongoose.connect(process.env.MONGO_URI).then(
 
     console.log('Database connected')
 ).catch(err => console.log(err.message))

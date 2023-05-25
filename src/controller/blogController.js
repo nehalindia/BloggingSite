@@ -1,14 +1,14 @@
 const Blog = require('../models/blogsModel')
 const Author = require('../models/authorModel')
 
-async function createAuthor(req,res){
-  try {
-      let data = await Author.create(req.body);
-      res.status(201).send({data : data, msg : 'author is succesfully created'})
-  } catch (error) {
-      res.status(500).send({msg : error.message})
-  }
-}
+// async function createAuthor(req,res){
+//   try {
+//       let data = await Author.create(req.body);
+//       res.status(201).send({data : data, msg : 'author is succesfully created'})
+//   } catch (error) {
+//       res.status(500).send({msg : error.message})
+//   }
+// }
 
 async function createBlog(req,res){
     try {
@@ -68,7 +68,7 @@ const filterBlogs = async (req, res) => {
         }
       }
 
-      const result = await Blog.find(filter);
+      const result = await Blog.find(filters);
       res.status(200).json({ status: true, message: "Blogs List", data: result });
     } catch (error) {
       res.status(404).json({ status: false, message: error.message.toString() });
@@ -174,4 +174,4 @@ const deleteBlogQuery = async function(req,res){
   }    
 }
 
-module.exports = {createBlog,blogs,filterBlogs,updateBlog,createAuthor,deleteBlog,deleteBlogQuery}
+module.exports = {createBlog,blogs,filterBlogs,updateBlog,deleteBlog,deleteBlogQuery}
