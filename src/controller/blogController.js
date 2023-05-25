@@ -1,6 +1,15 @@
 const Blog = require('../models/blogsModel')
 const Author = require('../models/authorModel')
 
+async function createAuthor(req,res){
+  try {
+      let data = await Author.create(req.body);
+      res.status(201).send({data : data, msg : 'author is succesfully created'})
+  } catch (error) {
+      res.status(500).send({msg : error.message})
+  }
+}
+
 async function createBlog(req,res){
     try {
         const validId = await Author.findById(req.body.authorId);
@@ -104,5 +113,65 @@ const filterBlogs = async (req, res) => {
     }
 }
 
+const deleteBlog = async function(req,res){
+  let id = req.params.blogId
+  const date = new Date()
+  let result = await Blog.findById(id)
+  if(!result) {return res.status(404).send({status: false, msg: "Id not found"})}
 
-module.exports = {createBlog,blogs,filterBlogs,updateBlog}
+  const dateUp = {deletedAt : date}
+  const isdeletd = { isDeleted :true}
+  try{
+      await Blog.updateOne({_id:id},
+          {$set : dateUp},
+          {new :true}
+      )
+      let savedata = await Blog.updateOne({_id:id},
+          {$set : isdeletd},
+          {new :true}
+      )
+      res.status(200).send({status:true})
+  }
+  catch(error){
+      console.log(error.message);
+      res.status(501).json({message:error.message})
+  }    
+}
+
+const deleteBlogQuery = async function(req,res){
+  // const filters = {};
+  
+  // for (const key in req.query) {
+  //     if (key === 'tags') {
+  //         filters[key] = { $in: req.query[key].split(',') };
+  //     } else {
+  //         filters[key] = req.query[key];
+  //     }
+  // }
+
+  let filters = req.query
+  let result = await Blog.findOne(filters).select({_id:1})
+  console.log(result)
+  if(!result) {return res.status(404).send({status: false, msg: "Id not found"})}
+  let id = result._id
+
+  const date = new Date()
+  const dateUp = {deletedAt : date}
+  const isdeletd = { isDeleted :true}
+  try{
+      await Blog.updateOne({_id:id},
+          {$set : dateUp},
+          {new :true}
+      )
+      let savedata = await Blog.updateOne({_id:id},
+          {$set : isdeletd},
+          {new :true}
+      )
+      res.status(200).send({status:true})
+  }
+  catch(error){
+      res.status(501).json({message:error.message})
+  }    
+}
+
+module.exports = {createBlog,blogs,filterBlogs,updateBlog,createAuthor,deleteBlog,deleteBlogQuery}
