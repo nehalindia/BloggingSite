@@ -17,7 +17,7 @@ const blogSchema = new mongoose.Schema({
             required : true,
             
         },
-        tax : {
+        tags : {
             type : [String],
         },
         category : {
@@ -49,3 +49,4 @@ const blogSchema = new mongoose.Schema({
 const Blog = mongoose.model("Blog",blogSchema);
 
 module.exports = Blog;
+
