@@ -7,13 +7,7 @@ dotenv.config()
 
 app.use(express.json())
 
-// mongoose.connect(process.env.MONGO_URI).then(
-//     console.log('Database connected')
-// )
-
-
 app.use('/',routes)
-
 
 const PORT = process.env.PORT || 3000
 
