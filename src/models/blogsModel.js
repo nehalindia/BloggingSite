@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const author = require("./authorModel")
 
 const blogSchema = new mongoose.Schema({    
         title : {
@@ -14,7 +13,6 @@ const blogSchema = new mongoose.Schema({
             ref : "Author",
             type : mongoose.Schema.Types.Mixed,
             required : true,
-            
         },
         tags : {
             type : [String],

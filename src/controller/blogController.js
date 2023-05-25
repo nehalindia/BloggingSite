@@ -115,25 +115,15 @@ const filterBlogs = async (req, res) => {
 
 const deleteBlog = async function(req,res){
   let id = req.params.blogId
-  const date = new Date()
   let result = await Blog.findById(id)
   if(!result) {return res.status(404).send({status: false, msg: "Id not found"})}
 
-  const dateUp = {deletedAt : date}
-  const isdeletd = { isDeleted :true}
+  const dateUp = {deletedAt : new Date(), isDeleted :true}
   try{
-      await Blog.updateOne({_id:id},
-          {$set : dateUp},
-          {new :true}
-      )
-      let savedata = await Blog.updateOne({_id:id},
-          {$set : isdeletd},
-          {new :true}
-      )
+      await Blog.updateOne({_id:id}, {$set : dateUp})
       res.status(200).send({status:true})
   }
   catch(error){
-      console.log(error.message);
       res.status(501).json({message:error.message})
   }    
 }
@@ -151,22 +141,22 @@ const deleteBlogQuery = async function(req,res){
 
   let filters = req.query
   let result = await Blog.findOne(filters).select({_id:1})
-  console.log(result)
+  // console.log(result)
   if(!result) {return res.status(404).send({status: false, msg: "Id not found"})}
   let id = result._id
 
-  const date = new Date()
-  const dateUp = {deletedAt : date}
-  const isdeletd = { isDeleted :true}
+  // const date = new Date()
+  const dateUp = {deletedAt : new Date(), isDeleted :true}
+  // const isdeletd = { }
   try{
       await Blog.updateOne({_id:id},
           {$set : dateUp},
           {new :true}
       )
-      let savedata = await Blog.updateOne({_id:id},
-          {$set : isdeletd},
-          {new :true}
-      )
+      // let savedata = await Blog.updateOne({_id:id},
+      //     {$set : isdeletd},
+      //     {new :true}
+      // )
       res.status(200).send({status:true})
   }
   catch(error){
