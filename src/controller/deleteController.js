@@ -26,13 +26,23 @@ const deleteBlog = async function(req,res){
 }
 
 const deleteBlog1 = async function(req,res){
-    let data = req.query
+    // const filters = {};
     
-    const date = new Date()
-    let result = await Author.findOne({data}).select({_id:1})
+    // for (const key in req.query) {
+    //     if (key === 'tags') {
+    //         filters[key] = { $in: req.query[key].split(',') };
+    //     } else {
+    //         filters[key] = req.query[key];
+    //     }
+    // }
+
+    let filters = req.query
+    let result = await Author.findOne(filters).select({_id:1})
+    console.log(result)
     if(!result) {return res.status(404).send({status: false, msg: "Id not found"})}
     let id = result._id
 
+    const date = new Date()
     const dateUp = {deletedAt : date}
     const isdeletd = { isDeleted :true}
     try{
@@ -47,7 +57,6 @@ const deleteBlog1 = async function(req,res){
         res.status(200).send({status:true})
     }
     catch(error){
-        console.log(error.message);
         res.status(501).json({message:error.message})
     }    
 }
