@@ -57,5 +57,43 @@ const filterBlogs = async (req, res) => {
     }
   };
 
+  const updateBlog = async (req, res) => {
+    try {
+        let blogId = req.params.blogId;
+        let data = req.body;
+    
+        let blog = await Blog.findOne({ _id: blogId, isDeleted: false });
+        if (!blog) {
+            return res.status(404).send({ 
+                status: false,
+                message: 'Blog not found'
+             });
+        }
 
-module.exports = {createBlog,blogs,filterBlogs}
+        const updatedData = {
+            ...data,
+            title: data.title,
+            body: data.body,
+            tags: blog.tags.concat(data.tags || []),
+            subcategory: blog.subcategory.concat(data.subcategory || []),
+            isPublished: data.isPublished,
+            publishedAt: data.isPublished ? new Date() : undefined
+          };
+
+        const updatedblog = await Blog.findOneAndUpdate(
+            { _id: blogId, isDeleted: false }, 
+            updatedData, 
+            { new: true }
+        );
+        res.status(200).send({
+            status: true,
+            message: "Blog updated successfully",
+            data: updatedblog
+        });
+    } catch (err) {
+        res.status(500).send(err);
+    }
+}
+
+
+module.exports = {createBlog,blogs,filterBlogs,updateBlog}

@@ -4,12 +4,19 @@ const dotenv = require('dotenv')
 const routes = require("./src/routes/index")
 const app = express()
 dotenv.config()
-const PORT = process.env.PORT || 3000
 
 app.use(express.json())
 
+// mongoose.connect(process.env.MONGO_URI).then(
+//     console.log('Database connected')
+// )
+
+
 app.use('/',routes)
 
-app.listen(PORT, ()=>{
+
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, () =>{
     console.log(`server is on ${PORT}`)
 })
