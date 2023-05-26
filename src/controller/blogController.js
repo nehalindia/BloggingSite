@@ -96,7 +96,7 @@ const filterBlogs = async (req, res) => {
             subcategory: blog.subcategory.concat(data.subcategory || []),
             isPublished: data.isPublished,
             publishedAt: data.isPublished ? new Date() : undefined
-          };
+        };
 
         const updatedblog = await Blog.findOneAndUpdate(
             { _id: blogId, isDeleted: false }, 
