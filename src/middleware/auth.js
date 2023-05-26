@@ -32,7 +32,6 @@ const auth = async (req,res,next)=>{
 const auth2 = async(req,res,next)=>{
     try {
         const token = req.headers.authorization.split(" ")[1];
-        console.log(req.headers.authorization)
         if(!token) return res.send({status:false,message:"token is requires!"});
         const decoding = jwt.verify(token, "secret-key-for-login");
         if(!decoding) return res.send({status:false,message:"Invalid token!"});
