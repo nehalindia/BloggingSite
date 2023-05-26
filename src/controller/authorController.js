@@ -22,7 +22,7 @@ const createAuthor = async (req,res) => {
             return res.status(400).send({msg: 'Invalid email format'})
         }
         const existingAuthor = await Author.findOne({ email: data.email });
-        if (existingAuthor) {
+        if(existingAuthor) {
                 return res.status(400).send({ msg: 'Email already exists'});
         }
         if(!data.title){
@@ -42,6 +42,7 @@ const createAuthor = async (req,res) => {
         res.status(500).send({msg : error.message})
     }
 }
+
 const login = async (req,res)=>{
     try {
         const user = await Author.findOne({email:req.body.email});
