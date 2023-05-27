@@ -34,14 +34,18 @@ const auth2 = async(req,res,next)=>{
         if(!token) return res.send({status:false,message:"token is requires!"});
         const decoding = jwt.verify(token, "secret-key-for-login");
         if(!decoding) return res.send({status:false,message:"Invalid token!"});
-        const theUser = await Author.findById(decoding.userId)
+        const user = await Author.findById(decoding.userId)
         let id={}
         if(req.params.blogId){
-            id = await Blog.findById(req.params.blogId)
-        }else if(req.query){
+            id = await Blog.findOne({_id:req.params.blogId, authorId: user._id, isDeleted: false})
+            console.log(user._id, req.params.blogId,id)
+        }else if(Object.keys(req.query).length !== 0){
+            req.query["authorId"] = user._id
+            console.log("else if")
             id = await Blog.findOne(req.query).select({authorId:1})
-        }
-         if(!id.authorId==theUser._id) return res.status(403).send({msg :"user unauthorized"})
+        }else if(Object.keys(req.query).length===0) return res.status(403).send({msg :"Add Query Parameters"})
+       
+        if(id === null) return res.status(403).send({msg :"user unauthorized"})
         
         next()
     } catch (error) {
@@ -49,18 +53,18 @@ const auth2 = async(req,res,next)=>{
     }
 };
 
-// const auth3 = async(req,res,next)=>{
-//     try {
-//         const token = req.headers.authorization.split(" ")[1];
-//         if(!token) return res.send({status:false,message:"token is requires!"});
-//         const decoding = jwt.verify(token, "secret-key-for-login");
-//         if(!decoding) return res.send({status:false,message:"Invalid token!"});
-//         const theUser = await Author.findById(decoding.userId);
-//         req.body.authorId = theUser._id
-//         next()
-//     } catch (error) {
-//         res.status(404).send({error:error.message});
-//     }
-// };
+const auth3 = async(req,res,next)=>{
+    try {
+        const token = req.headers.authorization.split(" ")[1];
+        if(!token) return res.send({status:false,message:"token is requires!"});
+        const decoding = jwt.verify(token, "secret-key-for-login");
+        if(!decoding) return res.send({status:false,message:"Invalid token!"});
+        const theUser = await Author.findById(decoding.userId);
+        req.body.authorId = theUser._id
+        next()
+    } catch (error) {
+        res.status(404).send({error:error.message});
+    }
+};
 
-module.exports = {auth,auth2,hashPass};
+module.exports = {auth,auth2,hashPass,auth3};

@@ -3,7 +3,7 @@ const router = express.Router();
 
 const {createAuthor,login}= require('../controller/authorController')
 const {createBlog,blogs,updateBlog,deleteBlog,deleteBlogQuery} = require('../controller/blogController')
-const {auth,auth2,hashPass} = require('../middleware/auth')
+const {auth,auth2,hashPass,auth3} = require('../middleware/auth')
 
 router.post('/authors',hashPass,createAuthor)
 router.post('/login', auth,login)

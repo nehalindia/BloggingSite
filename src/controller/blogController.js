@@ -96,8 +96,8 @@ const deleteBlog = async function(req,res){
 const deleteBlogQuery = async function(req,res){
 
   let filters = req.query
-  let result = await Blog.findOne(filters).select({_id:1})
-  if(!result) {return res.status(404).send({status: false, msg: "Id not found"})}
+  let result = await Blog.findOne(filters).select({_id:1,isDeleted:1})
+  if(!result && result.isDeleted== false) {return res.status(404).send({status: false, msg: "Id not found"})}
   let id = result._id
 
   const dateUp = {deletedAt : new Date(), isDeleted :true}
