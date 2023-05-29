@@ -34,7 +34,9 @@ const auth2 = async(req,res,next)=>{
         const token = req.headers["x-api-key"]
         // console.log(req.headers.authorization)
         if(!token) return res.send({status:false,message:"token is requires!"});
-        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY, (err, token) => {
+            if(err) return res.status(404).send({status:false,message:"Invalid token!"});
+        });
         if(!decoding) return res.send({status:false,message:"Invalid token!"});
         const user = await Author.findById(decoding.userId)
         let id={}
@@ -52,7 +54,7 @@ const auth2 = async(req,res,next)=>{
                 filters["authorId"]=user._id.toString()
             }
             id = await Blog.findOne(filters).select({authorId:1})
-            console.log( user._id,req.query)
+            console.log( user._id,req.query,id)
         }else if(Object.keys(req.query).length===0) return res.status(403).send({msg :"Add Query Parameters"})
        
         if(id === null) return res.status(403).send({msg :" Data not found"})
@@ -68,7 +70,9 @@ const auth3 = async(req,res,next)=>{
     try {
         const token = req.headers["x-api-key"]
         if(!token) return res.send({status:false,message:"token is requires!"});
-        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY, (err, token) => {
+            if(err) return res.status(404).send({status:false,message:"Invalid token!"});
+        });
         if(!decoding) return res.send({status:false,message:"Invalid token!"});
         const theUser = await Author.findById(decoding.userId);
 
