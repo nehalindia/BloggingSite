@@ -40,12 +40,13 @@ const auth2 = async(req,res,next)=>{
             id = await Blog.findOne({_id:req.params.blogId, authorId: user._id, isDeleted: false})
             console.log(user._id, req.params.blogId,id)
         }else if(Object.keys(req.query).length !== 0){
-            req.query["authorId"] = user._id
-            console.log("else if")
+            // req.query["authorId"] = user._id
+            // console.log("else if "+decoding.userId)
             id = await Blog.findOne(req.query).select({authorId:1})
+            // console.log(id.authorId, user._id,req.query)
         }else if(Object.keys(req.query).length===0) return res.status(403).send({msg :"Add Query Parameters"})
        
-        if(id === null) return res.status(403).send({msg :"user unauthorized"})
+        if(id === null || id.authorId != user._id ) return res.status(403).send({msg :"user unauthorized"})
         
         next()
     } catch (error) {

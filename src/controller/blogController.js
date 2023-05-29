@@ -1,7 +1,7 @@
 const Blog = require('../models/blogsModel')
 const Author = require('../models/authorModel')
 
-async function createBlog(req,res){
+const createBlog = async function(req,res){
     try {
         const validId = await Author.findById(req.body.authorId);
         if(validId){
