@@ -39,7 +39,7 @@ const auth2 = async(req,res,next)=>{
         let id={}
         if(req.params.blogId){
             id = await Blog.findOne({_id:req.params.blogId, authorId: user._id.toString()})
-            console.log(user._id, req.params.blogId,id)
+            // console.log(user._id, req.params.blogId,id)
         }else if(Object.keys(req.query).length !== 0){
             const filters = {};
             for (const key in req.query) {
@@ -49,8 +49,6 @@ const auth2 = async(req,res,next)=>{
                     filters[key] = req.query[key];
                 }
             }
-            // req.query["isDeleted"] = false
-            // console.log("else if "+decoding.userId)
             id = await Blog.findOne(filters).select({authorId:1})
             console.log( user._id,req.query)
         }else if(Object.keys(req.query).length===0) return res.status(403).send({msg :"Add Query Parameters"})
