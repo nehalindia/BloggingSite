@@ -38,7 +38,7 @@ const auth2 = async(req,res,next)=>{
         const user = await Author.findById(decoding.userId)
         let id={}
         if(req.params.blogId){
-            id = await Blog.findOne({_id:req.params.blogId, authorId: user._id.toString()})
+            id = await Blog.findOne({_id:req.params.blogId})
             // console.log(user._id, req.params.blogId,id)
         }else if(Object.keys(req.query).length !== 0){
             const filters = {};
