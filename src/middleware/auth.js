@@ -24,26 +24,35 @@ const auth = async (req,res,next)=>{
             next();
         }
     }catch (error) {
-        res.status(404).send({msg : error.message})
+        res.status(500).send({msg : error.message})
     }
 };
     
 const auth2 = async(req,res,next)=>{
     try {
         const token = req.headers.authorization.split(" ")[1];
+        // console.log(req.headers.authorization)
         if(!token) return res.send({status:false,message:"token is requires!"});
-        const decoding = jwt.verify(token, "secret-key-for-login");
+        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY);
         if(!decoding) return res.send({status:false,message:"Invalid token!"});
         const user = await Author.findById(decoding.userId)
         let id={}
         if(req.params.blogId){
-            id = await Blog.findOne({_id:req.params.blogId, authorId: user._id, isDeleted: false})
+            id = await Blog.findOne({_id:req.params.blogId, authorId: user._id.toString()})
             console.log(user._id, req.params.blogId,id)
         }else if(Object.keys(req.query).length !== 0){
-            req.query["isDeleted"] = false
+            const filters = {};
+            for (const key in req.query) {
+                if (key == 'tags' || key == 'subcategory') {
+                    filters[key] = { $in: req.query[key].split(',') };
+                } else {
+                    filters[key] = req.query[key];
+                }
+            }
+            // req.query["isDeleted"] = false
             // console.log("else if "+decoding.userId)
-            id = await Blog.findOne(req.query).select({authorId:1})
-            // console.log(id.authorId, user._id,req.query)
+            id = await Blog.findOne(filters).select({authorId:1})
+            console.log( user._id,req.query)
         }else if(Object.keys(req.query).length===0) return res.status(403).send({msg :"Add Query Parameters"})
        
         if(id === null) return res.status(403).send({msg :" Data not found"})
@@ -51,22 +60,22 @@ const auth2 = async(req,res,next)=>{
         
         next()
     } catch (error) {
-        res.status(404).send({error:error.message});
+        res.status(500).send({error:error.message});
     }
 };
 
-// const auth3 = async(req,res,next)=>{
-//     try {
-//         const token = req.headers.authorization.split(" ")[1];
-//         if(!token) return res.send({status:false,message:"token is requires!"});
-//         const decoding = jwt.verify(token, "secret-key-for-login");
-//         if(!decoding) return res.send({status:false,message:"Invalid token!"});
-//         const theUser = await Author.findById(decoding.userId);
-//         req.body.authorId = theUser._id
-//         next()
-//     } catch (error) {
-//         res.status(404).send({error:error.message});
-//     }
-// };
+const auth3 = async(req,res,next)=>{
+    try {
+        const token = req.headers.authorization.split(" ")[1];
+        if(!token) return res.send({status:false,message:"token is requires!"});
+        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        if(!decoding) return res.send({status:false,message:"Invalid token!"});
+        const theUser = await Author.findById(decoding.userId);
+        if(req.body.authorId != theUser._id) return res.status(404).send({msg : "Not valid a author!"})
+        next()
+    } catch (error) {
+        res.status(500).send({error:error.message});
+    }
+};
 
-module.exports = {auth,auth2,hashPass};
+module.exports = {auth,auth2,hashPass, auth3};

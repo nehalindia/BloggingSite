@@ -47,7 +47,7 @@ const login = async (req,res)=>{
     try {
         const user = await Author.findOne({email:req.body.email});
         const token = jwt.sign({userId:user._id.toString()}, 
-          "secret-key-for-login",{
+          process.env.JWT_SECRET_KEY,{
                 expiresIn:"1d"
             });
         res.setHeader("x-api-key", token);
