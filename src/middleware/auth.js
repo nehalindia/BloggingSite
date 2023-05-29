@@ -34,9 +34,9 @@ const auth2 = async(req,res,next)=>{
         const token = req.headers["x-api-key"]
         // console.log(req.headers.authorization)
         if(!token) return res.send({status:false,message:"token is requires!"});
-        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY, (err, token) => {
-            if(err) return res.status(404).send({status:false,message:"Invalid token!"});
-        });
+        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY) //(err, token) => {
+        //    if(err) return res.status(404).send({status:false,message:"Invalid token!"});
+        // });
         if(!decoding) return res.send({status:false,message:"Invalid token!"});
         const user = await Author.findById(decoding.userId)
         let id={}
@@ -70,9 +70,9 @@ const auth3 = async(req,res,next)=>{
     try {
         const token = req.headers["x-api-key"]
         if(!token) return res.send({status:false,message:"token is requires!"});
-        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY, (err, token) => {
-            if(err) return res.status(404).send({status:false,message:"Invalid token!"});
-        });
+        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY) //(err, token) => {
+            // if(err) return res.status(404).send({status:false,message:"Invalid token!"});
+        // });
         if(!decoding) return res.send({status:false,message:"Invalid token!"});
         const theUser = await Author.findById(decoding.userId);
 
