@@ -116,7 +116,7 @@ const deleteBlog = async function(req,res){
 const deleteBlogQuery = async function(req,res){
     
 //   let filters = req.query
-const filters = {};
+    const filters = {};
       for (const key in req.query) {
         if (key == 'tags' || key == 'subcategory') {
           filters[key] = { $in: req.query[key].split(',') };

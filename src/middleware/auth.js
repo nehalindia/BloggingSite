@@ -30,7 +30,8 @@ const auth = async (req,res,next)=>{
     
 const auth2 = async(req,res,next)=>{
     try {
-        const token = req.headers.authorization.split(" ")[1];
+        // const token = req.headers.authorization.split(" ")[1];
+        const token = req.headers["x-api-key"]
         // console.log(req.headers.authorization)
         if(!token) return res.send({status:false,message:"token is requires!"});
         const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY);
@@ -48,6 +49,7 @@ const auth2 = async(req,res,next)=>{
                 } else {
                     filters[key] = req.query[key];
                 }
+                filters["authorId"]=user._id.toString()
             }
             id = await Blog.findOne(filters).select({authorId:1})
             console.log( user._id,req.query)
@@ -64,7 +66,8 @@ const auth2 = async(req,res,next)=>{
 
 const auth3 = async(req,res,next)=>{
     try {
-        const token = req.headers.authorization.split(" ")[1];
+        // const token = req.headers.authorization.split(" ")[1];
+        const token = req.headers["x-api-key"]
         if(!token) return res.send({status:false,message:"token is requires!"});
         const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY);
         if(!decoding) return res.send({status:false,message:"Invalid token!"});
