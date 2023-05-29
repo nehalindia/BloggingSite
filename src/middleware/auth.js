@@ -66,13 +66,13 @@ const auth2 = async(req,res,next)=>{
 
 const auth3 = async(req,res,next)=>{
     try {
-        // const token = req.headers.authorization.split(" ")[1];
         const token = req.headers["x-api-key"]
         if(!token) return res.send({status:false,message:"token is requires!"});
         const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY);
         if(!decoding) return res.send({status:false,message:"Invalid token!"});
         const theUser = await Author.findById(decoding.userId);
-        if(req.body.authorId != theUser._id) return res.status(404).send({msg : "Not valid a author!"})
+
+        // if(req.body.authorId != theUser._id) return res.status(404).send({msg : "Not valid a author!"})
         next()
     } catch (error) {
         res.status(500).send({error:error.message});

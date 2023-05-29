@@ -9,7 +9,7 @@ router.post('/authors',hashPass,createAuthor)
 router.post('/login', auth,login)
 router.post('/blogs',auth3,createBlog)
 
-router.get('/blogs',blogs)
+router.get('/blogs',auth3,blogs)
 router.put('/blogs/:blogId',auth2,updateBlog)
 
 router.delete('/blogs/:blogId',auth2, deleteBlog)
