@@ -82,7 +82,7 @@ const blogs = async (req, res) => {
             publishedAt: data.isPublished ? new Date() : undefined
         };
 
-        const updatedblog = await Blog.findOneAndUpdate(
+        const save = await Blog.findOneAndUpdate(
             { _id: blogId, isDeleted: false }, 
             updatedData, 
             { new: true }
@@ -90,7 +90,7 @@ const blogs = async (req, res) => {
         res.status(200).send({
             status: true,
             message: "Blog updated successfully",
-            data: updatedblog
+            data: save
         });
     } catch (err) {
         res.status(500).send({msg:err.message});
