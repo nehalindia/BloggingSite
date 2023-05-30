@@ -18,7 +18,8 @@ const auth = async (req,res,next)=>{
     try{
         const {email,password} = req.body;
         const user = await Author.findOne({email:email});
-        if(!user) return res.status(404).send("invalid user!");
+        console.log(user, req.body)
+        if(!user) return res.status(404).send("invalid user! by");
         const hashPass = await bcrypt.compare(password,user.password);
         if(hashPass===true){ 
             next();
