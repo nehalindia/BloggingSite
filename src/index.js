@@ -4,9 +4,6 @@ const routes = require("./routes/routes")
 const app = express()
 dotenv.config()
 
-const cors = require('cors')
-app.use(cors())
-
 
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MONGO_URI).then(

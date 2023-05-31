@@ -84,7 +84,7 @@ const auth2 = async(req,res,next)=>{
         if(id === null){ return res.status(404).send({status:false, message: "Wrong Blog Id"}) }
         if(id.authorId != user._id ) {return res.status(403).send({status:false, message: "user unauthorized"}) }
         
-        next()
+        next();
     } catch (error) {
         res.status(500).send({status:false, message: error.message});
     }
