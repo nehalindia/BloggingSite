@@ -45,7 +45,7 @@ const blogs = async (req, res) => {
       filters["isPublished"] = true
 
       const result = await Blog.find(filters);
-      if(result.length<=0) return res.status(404).send({status: false, message: 'No blogs found'})
+      if(result.length<=0) {return res.status(404).send({status: false, message: 'No blogs found'})}
       res.status(200).json({ status: true, message: "Blogs List", data: result });
     } catch (error) {
       res.status(500).json({ status: false, message: error.message.toString() });
