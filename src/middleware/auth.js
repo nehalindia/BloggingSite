@@ -23,7 +23,7 @@ const auth = async (req,res,next)=>{
             return res.status(400).send({status: false, message:  'Email should be a valid email address'})
         }
         const user = await Author.findOne({email:email});
-        console.log(user, req.body)
+        // console.log(user, req.body)
         if(!user) return res.status(401).send({status:false, message: "invalid user!"});
         if (!password) {
             return res.status(400).send({status: false, message:  'Email should be a valid email address'})
@@ -43,9 +43,9 @@ const auth2 = async(req,res,next)=>{
         // const token = req.headers.authorization.split(" ")[1];
         const token = req.headers["x-api-key"]
         if(!token) return res.send({status:false, message:"token is requires!"});
-        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY) //(err, token) => {
-        //    if(err) return res.status(404).send({status:false,message:"Invalid token!"});
-        // });
+        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY, (err, token) => {
+            if(err) return res.status(404).send({status:false,message:"Invalid token!"});
+         })
         if(!decoding) return res.status(400).send({status:false, message:"Invalid token!"});
         if(!ObjectId.isValid(decoding.userId)) {
             res.status(400).send({status: false, message: `${authorIdFromToken} is not a valid token id`})
@@ -83,13 +83,18 @@ const auth3 = async(req,res,next)=>{
     try {
         const token = req.headers["x-api-key"]
         if(!token) return res.send({status:false, message: "token is requires!"});
-        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        if(!decoding) return res.status(403).send({status:false, message:"Invalid token!"});
-        if(!ObjectId.isValid(decoding.userId)) {
-            res.status(400).send({status: false, message: `${authorIdFromToken} is not a valid token id`})
-            return
-        }
-        next()
+        jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, decoded) => {
+            if(err) {return res.status(404).send({status:false,message:"Invalid token!"}) }
+            else{       
+                if(!ObjectId.isValid(decoded.userId)) {
+                    res.status(400).send({status: false, message: `${authorIdFromToken} is not a valid token id`})
+                    return
+                }
+                const theUser = await Author.findById(decoded.userId);
+                if(!theUser) return res.status(401).json({status: false, msg: "author not login"})
+                next()
+                }
+         })
     } catch (error) {
         res.status(500).send({status:false, message: error.message});
     }
@@ -98,16 +103,25 @@ const auth3 = async(req,res,next)=>{
 const auth4 = async(req,res,next)=>{
     try {
         const token = req.headers["x-api-key"]
+        if(!req.body.authorId) return res.status(400).send({status: false, message: "AuthorId is Missing"})
         if(!token) return res.send({status:false, message:"token is requires!"});
-        const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        if(!decoding) return res.status(403).send({status:false, message:"Invalid token!"});
-        if(!ObjectId.isValid(decoding.userId)) {
-            res.status(400).send({status: false, message: `${authorIdFromToken} is not a valid token id`})
-            return
-        }
-        const theUser = await Author.findById(decoding.userId);
-        if(req.body.authorId != theUser._id) return res.status(403).send({status: false, message: "Not valid a author!"})
-        next()
+
+        jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, decoded) => {
+            if(err) {return res.status(404).send({status:false,message:"Invalid token!"}) }
+            else{       
+                if(!ObjectId.isValid(decoded.userId)) {
+                    res.status(400).send({status: false, message: `${authorIdFromToken} is not a valid token id`})
+                    return
+                }
+                const theUser = await Author.findById(decoded.userId);
+                if(!theUser) return res.status(401).json({status: false, msg: "author not login"})
+                if(req.body.authorId != theUser._id) return res.status(404).send({status: false, message: "Not valid a author!"})
+                next()
+                
+            }
+         })
+       // if(!decoding) return res.status(403).send({status:false, message:"Invalid token!"});
+        
     } catch (error) {
         res.status(500).send({status:false, message: error.message});
     }

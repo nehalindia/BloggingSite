@@ -12,9 +12,6 @@ const createBlog = async function(req,res){
         if(!data.body){
             return res.status(400).send({status: false, message: 'blog body is required'})
         }
-        if(!data.authorId){
-            return res.status(400).send({status: false, message:'blog author id is required'})
-        }
         if(!data.tags){
             return res.status(400).send({status: false, message:'blog tags is required'})
         }
