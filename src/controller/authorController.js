@@ -50,10 +50,9 @@ const login = async (req,res)=>{
           process.env.JWT_SECRET_KEY,{
                 expiresIn:"1d"
             });
-        res.setHeader("x-api-key", token);
-        res.status(202).json({status:true,data:token})
+        res.status(200).json({status:true, message:token})
     } catch (error) {
-        res.status(500).send({msg : error.message})
+        res.status(500).send({status: false, message:  error.message})
     }
 }
 

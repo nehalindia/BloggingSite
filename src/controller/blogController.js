@@ -1,38 +1,37 @@
 const Blog = require('../models/blogsModel')
 const Author = require('../models/authorModel')
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId
 
 const createBlog = async function(req,res){
     try {
         let data = req.body
         if(!data.title){
-            return res.status(400).send({msg : 'blog title is required'})
+            return res.status(400).send({status: false, message: 'blog title is required'})
         }
         if(!data.body){
-            return res.status(400).send({msg : 'blog body is required'})
+            return res.status(400).send({status: false, message: 'blog body is required'})
         }
         if(!data.authorId){
-            return res.status(400).send({msg : 'blog author id is required'})
+            return res.status(400).send({status: false, message:'blog author id is required'})
         }
         if(!data.tags){
-            return res.status(400).send({msg : 'blog tags is required'})
+            return res.status(400).send({status: false, message:'blog tags is required'})
         }
         if(!data.category){
-            return res.status(400).send({msg : 'blog category is required'})
+            return res.status(400).send({status: false, message: 'blog category is required'})
         }
         if(!data.subcategory){
-            return res.status(400).send({msg : 'blog subcategory is required'})
+            return res.status(400).send({status: false, message:'blog subcategory is required'})
         }
         const validId = await Author.findById(data.authorId);
         if(validId){
             const blog = await Blog.create(data);
-            res.status(201).send({data : blog, msg : 'blog is succesfully created'})
+            res.status(201).send({status: true, message:'blog is succesfully created',data : blog })
         }
-       else{
-        res.status(400).send({message : 'maybe author id is not valid'})
-       }
         
     } catch (error) {
-        res.status(500).send({msg : error.message})
+        res.status(500).send({status: false, message: error.message})
     }
 
 }
@@ -52,6 +51,7 @@ const blogs = async (req, res) => {
       filters["isPublished"] = true
 
       const result = await Blog.find(filters);
+      if(!result) return res.status(404).send({status: false, message: 'No blogs found'})
       res.status(200).json({ status: true, message: "Blogs List", data: result });
     } catch (error) {
       res.status(500).json({ status: false, message: error.message.toString() });
@@ -93,15 +93,20 @@ const blogs = async (req, res) => {
             data: save
         });
     } catch (err) {
-        res.status(500).send({msg:err.message});
+        res.status(500).send({status: false, message: err.message});
     }
 }
 
 const deleteBlog = async function(req,res){
   let id = req.params.blogId
+
+  if(!ObjectId.isValid(id)) {
+        res.status(400).send({status: false, message: `${id} is not a valid blog id`})
+        return
+    }
   let result = await Blog.findById(id)
-  if(!result) {return res.status(404).send({status: false, msg: "Id not found"})}
-  if(result.isDeleted) {return res.status(404).send({status: false, msg: "Blog is already Deleted"})}
+  if(!result) {return res.status(404).send({status: false, message: "Id not found"})}
+  if(result.isDeleted) {return res.status(404).send({status: false, message: "Blog is already Deleted"})}
 
   const dateUp = {deletedAt : new Date(), isDeleted :true}
   try{
@@ -109,7 +114,7 @@ const deleteBlog = async function(req,res){
       res.status(200).send({status:true})
   }
   catch(error){
-      res.status(500).json({message:error.message})
+      res.status(500).json({status: false, message:error.message})
   }    
 }
 
@@ -137,7 +142,7 @@ const deleteBlogQuery = async function(req,res){
       res.status(200).send({status:true})
   }
   catch(error){
-      res.status(500).json({message:error.message})
+      res.status(500).json({status : false, message:error.message})
   }    
 }
 

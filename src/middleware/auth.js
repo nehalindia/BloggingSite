@@ -19,10 +19,10 @@ const auth = async (req,res,next)=>{
         const {email,password} = req.body;
         const user = await Author.findOne({email:email});
         console.log(user, req.body)
-        if(!user) return res.status(403).send({status:false, message: "invalid user!"});
+        if(!user) return res.status(401).send({status:false, message: "invalid user!"});
         const hashPass = await bcrypt.compare(password,user.password);
         if(hashPass!==true){ 
-            return res.status(403).send({status:false, message: "Password Not Matche!"});
+            return res.status(401).send({status:false, message: "Password Not Matche!"});
         }
         next();
     }catch (error) {
@@ -38,7 +38,7 @@ const auth2 = async(req,res,next)=>{
         const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY) //(err, token) => {
         //    if(err) return res.status(404).send({status:false,message:"Invalid token!"});
         // });
-        if(!decoding) return res.status(430).send({status:false, message:"Invalid token!"});
+        if(!decoding) return res.status(400).send({status:false, message:"Invalid token!"});
         const user = await Author.findById(decoding.userId)
         let id={}
         if(req.params.blogId){
@@ -56,10 +56,10 @@ const auth2 = async(req,res,next)=>{
             }
             id = await Blog.findOne(filters).select({authorId:1})
             console.log( user._id,req.query,id)
-        }else if(Object.keys(req.query).length===0) return res.status(403).send({status:false, message: "Add Query Parameters"})
+        }else if(Object.keys(req.query).length===0) return res.status(400).send({status:false, message: "Add Query Parameters"})
        
-        if(id === null) return res.status(403).send({status:false, message: " Data not found"})
-        if(id.authorId != user._id ) return res.status(403).send({status:false, message: "user unauthorized"})
+        if(id === null) return res.status(404).send({status:false, message: " Data not found"})
+        if(id.authorId != user._id ) return res.status(401).send({status:false, message: "user unauthorized"})
         
         next()
     } catch (error) {
