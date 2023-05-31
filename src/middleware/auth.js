@@ -7,7 +7,7 @@ const ObjectId = mongoose.Types.ObjectId
 
 const hashPass = async function(req, res, next){
     try{
-        if(!req.body.password) { return res.status(403).send({status: false, message: "author password is required"})}
+        if(!req.body.password) { return res.status(400).send({status: false, message: "Password is required"})}
         const pass = await bcrypt.hash(req.body.password, 12)
         req.body.password = pass
         next()
@@ -19,14 +19,20 @@ const hashPass = async function(req, res, next){
 const auth = async (req,res,next)=>{
     try{
         const {email,password} = req.body;
+        if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(email)) {
+            return res.status(400).send({status: false, message:  'Email should be a valid email address'})
+        }
         const user = await Author.findOne({email:email});
         console.log(user, req.body)
         if(!user) return res.status(401).send({status:false, message: "invalid user!"});
-        const hashPass = await bcrypt.compare(password,user.password);
-        if(hashPass!==true){ 
-            return res.status(401).send({status:false, message: "Password Not Matche!"});
+        if (!password) {
+            return res.status(400).send({status: false, message:  'Email should be a valid email address'})
         }
-        next();
+        const hashPass = await bcrypt.compare(password,user.password);
+        if(hashPass === true){ 
+            next();   
+        }
+        return res.status(401).send({status:false, message: "Password Not Matched!"});
     }catch (error) {
         res.status(500).send({status:false, message:  error.message})
     }

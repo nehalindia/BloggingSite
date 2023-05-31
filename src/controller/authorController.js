@@ -19,7 +19,7 @@ const createAuthor = async (req,res) => {
             return res.status(400).send({status: false, message:  'author email is required'})
         }
         if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(data.email)) {
-            return res.status(400).send({status: false, message:  'Invalid email format'})
+            return res.status(400).send({status: false, message:  'Email should be a valid email address'})
         }
         const existingAuthor = await Author.findOne({ email: data.email });
         if(existingAuthor) {
