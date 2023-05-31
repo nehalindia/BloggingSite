@@ -99,7 +99,7 @@ try{
         res.status(400).send({status: false, message: `${id} is not a valid blog id`})
         return
     }
-  let result = await Blog.findOne({_id:id, isDeleted:false})
+  let result = await Blog.findOne({_id:id})
   if(!result) {return res.status(404).send({status: false, message: "Id not found"})}
   if(result.isDeleted) {return res.status(404).send({status: false, message: "Blog is already Deleted"})}
 

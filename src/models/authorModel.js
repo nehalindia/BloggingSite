@@ -19,7 +19,7 @@ const authorSchema = new mongoose.Schema({
             type : String,
             required: 'Email address is required',
             unique : true,
-            match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            // match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
             validate: {
                 validator: function (email) {
                     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
