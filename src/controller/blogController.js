@@ -21,12 +21,9 @@ const createBlog = async function(req,res){
         if(!data.subcategory){
             return res.status(400).send({status: false, message:'blog subcategory is required'})
         }
-        const validId = await Author.findById(data.authorId);
-        if(validId){
-            const blog = await Blog.create(data);
-            res.status(201).send({status: true, message:'blog is succesfully created',data : blog })
-        }
         
+        const blog = await Blog.create(data);
+        res.status(201).send({status: true, message:'blog is succesfully created',data : blog })
     } catch (error) {
         res.status(500).send({status: false, message: error.message})
     }
@@ -48,7 +45,7 @@ const blogs = async (req, res) => {
       filters["isPublished"] = true
 
       const result = await Blog.find(filters);
-      if(!result) return res.status(404).send({status: false, message: 'No blogs found'})
+      if(result.length<=0) return res.status(404).send({status: false, message: 'No blogs found'})
       res.status(200).json({ status: true, message: "Blogs List", data: result });
     } catch (error) {
       res.status(500).json({ status: false, message: error.message.toString() });
@@ -95,18 +92,19 @@ const blogs = async (req, res) => {
 }
 
 const deleteBlog = async function(req,res){
-  let id = req.params.blogId
+try{
+    let id = req.params.blogId
 
   if(!ObjectId.isValid(id)) {
         res.status(400).send({status: false, message: `${id} is not a valid blog id`})
         return
     }
-  let result = await Blog.findById(id)
+  let result = await Blog.findOne({_id:id, isDeleted:false})
   if(!result) {return res.status(404).send({status: false, message: "Id not found"})}
   if(result.isDeleted) {return res.status(404).send({status: false, message: "Blog is already Deleted"})}
 
   const dateUp = {deletedAt : new Date(), isDeleted :true}
-  try{
+  
       await Blog.updateOne({_id:id}, {$set : dateUp})
       res.status(200).send({status:true})
   }
@@ -117,6 +115,7 @@ const deleteBlog = async function(req,res){
 
 const deleteBlogQuery = async function(req,res){  
 //   let filters = req.query
+try{
     const filters = {};
       for (const key in req.query) {
         if (key == 'tags' || key == 'subcategory') {
@@ -131,7 +130,6 @@ const deleteBlogQuery = async function(req,res){
   let id = result._id
 
   const dateUp = {deletedAt : new Date(), isDeleted :true}
-  try{
       await Blog.updateOne({_id:id},
           {$set : dateUp},
           {new :true}
