@@ -7,6 +7,7 @@ const ObjectId = mongoose.Types.ObjectId
 
 const hashPass = async function(req, res, next){
     try{
+        req.body.email = req.body.email.toLowerCase()
         if(!req.body.password) { return res.status(400).send({status: false, message: "Password is required"})}
         const pass = await bcrypt.hash(req.body.password, 12)
         req.body.password = pass
@@ -18,12 +19,14 @@ const hashPass = async function(req, res, next){
 
 const auth = async (req,res,next)=>{
     try{
+        req.body.email = req.body.email.toLowerCase()
         const {email,password} = req.body;
         if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(email)) {
             return res.status(400).send({status: false, message:  'Email should be a valid email address'})
         }
+        req.body.email = req.body.email.toLowerCase()
         const user = await Author.findOne({email:email});
-        // console.log(user, req.body)
+        console.log(user, req.body)
         if(!user) return res.status(401).send({status:false, message: "invalid user!"});
         if (!password) {
             return res.status(400).send({status: false, message:  'Email should be a valid email address'})
@@ -99,7 +102,7 @@ const auth3 = async(req,res,next)=>{
                     return
                 }
                 const theUser = await Author.findById(decoded.userId);
-                if(!theUser) return res.status(401).json({status: false, msg: "author not login"})
+                if(!theUser){ return res.status(401).json({status: false, msg: "author not login"})}
                 next()
                 }
          })
@@ -122,8 +125,8 @@ const auth4 = async(req,res,next)=>{
                     return
                 }
                 const theUser = await Author.findById(decoded.userId);
-                if(!theUser) return res.status(401).json({status: false, msg: "author not login"})
-                if(req.body.authorId != theUser._id) return res.status(404).send({status: false, message: "Not valid a author!"})
+                if(!theUser){ return res.status(401).json({status: false, msg: "author not login"}) }
+                if(req.body.authorId != theUser._id.toString()){ return res.status(404).send({status: false, message: "Not valid a author!"})}
                 next()               
             }
          })
