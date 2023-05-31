@@ -3,31 +3,35 @@ const mongoose = require('mongoose');
 const blogSchema = new mongoose.Schema({    
         title : {
             type : String,
-            required : true
+            required: 'Blog title is required',
+            trim: true
         },
         body : {
             type : String,
-            required : true
+            required: 'Blog body is required',
+            trim: true
         },
         authorId : {
-            ref : "Author",
-            type : mongoose.Schema.Types.Mixed,
-            required : true,
+            required: 'Blog Author is required',
+            type: mongoose.Schema.Types.ObjectId, 
+            refs: 'Author'
         },
         tags : {
             type : [String],
+            trim: true
         },
         category : {
-            type : String,
-            required : true,
-           
+            type: String,
+            trim: true,
+            required: 'Blog category is required'
         },
         subcategory : {
             type : [String],
-
+            trim: true
         },
         deletedAt : {
             type : Date,
+            default: null
         },
         isDeleted : {
             type : Boolean,
@@ -35,6 +39,7 @@ const blogSchema = new mongoose.Schema({
         },
         publishedAt : {
             type : Date,
+            default: null
         },
         isPublished : {
             type : Boolean,
