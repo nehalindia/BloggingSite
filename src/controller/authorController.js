@@ -7,39 +7,39 @@ const createAuthor = async (req,res) => {
         let data = req.body;
 
         if(!data) {
-            return res.status(400).send({msg : 'author data is required'})
+            return res.status(400).send({status: false, message:  'author data is required'})
         } 
-        // if(!data.fname){
-        //     return res.status(400).send({msg : 'author first name is required'})
-        // }
+        if(!data.fname){
+            return res.status(400).send({status: false,message:  'author first name is required'})
+        }
         if(!data.lname){
-            return res.status(400).send({msg : 'author last name is required'})
+            return res.status(400).send({status: false,message:  'author last name is required'})
         }
         if(!data.email){
-            return res.status(400).send({msg : 'author email is required'})
+            return res.status(400).send({status: false, message:  'author email is required'})
         }
         if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(data.email)) {
-            return res.status(400).send({msg: 'Invalid email format'})
+            return res.status(400).send({status: false, message:  'Invalid email format'})
         }
         const existingAuthor = await Author.findOne({ email: data.email });
         if(existingAuthor) {
-                return res.status(400).send({ msg: 'Email already exists'});
+                return res.status(400).send({status: false, message:  'Email already exists'});
         }
         if(!data.title){
-            return res.status(400).send({msg : 'author title is required'})
+            return res.status(400).send({status: false, message:  'author title is required'})
         }
         if (!['Mr', 'Mrs', 'Miss'].includes(data.title)) {
-            return res.status(400).json({ error: 'Invalid title. Author title will only include - Mr, Mrs, Miss' });
+            return res.status(400).json({status: false, message:  'Invalid title. Author title will only include - Mr, Mrs, Miss' });
         }
 
         let createAuthor = await Author.create(req.body);
         res.status(201).send({
             status: true,
-            msg : 'author is succesfully created',
+            message:  'author is succesfully created',
             data : createAuthor, 
         })
     } catch (error) {
-        res.status(500).send({msg : error.message})
+        res.status(500).send({status: false, message:  error.message})
     }
 }
 
