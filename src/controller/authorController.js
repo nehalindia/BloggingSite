@@ -9,9 +9,9 @@ const createAuthor = async (req,res) => {
         if(!data) {
             return res.status(400).send({msg : 'author data is required'})
         } 
-        if(!data.fname){
-            return res.status(400).send({msg : 'author first name is required'})
-        }
+        // if(!data.fname){
+        //     return res.status(400).send({msg : 'author first name is required'})
+        // }
         if(!data.lname){
             return res.status(400).send({msg : 'author last name is required'})
         }
