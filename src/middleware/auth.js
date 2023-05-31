@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const Author = require('../models/authorModel');
 const Blog = require('../models/blogsModel')
 const bcrypt = require('bcrypt');
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId
 
 const hashPass = async function(req, res, next){
     try{
@@ -39,6 +41,10 @@ const auth2 = async(req,res,next)=>{
         //    if(err) return res.status(404).send({status:false,message:"Invalid token!"});
         // });
         if(!decoding) return res.status(400).send({status:false, message:"Invalid token!"});
+        if(!ObjectId.isValid(decoding.userId)) {
+            res.status(400).send({status: false, message: `${authorIdFromToken} is not a valid token id`})
+            return
+        }
         const user = await Author.findById(decoding.userId)
         let id={}
         if(req.params.blogId){
@@ -73,7 +79,10 @@ const auth3 = async(req,res,next)=>{
         if(!token) return res.send({status:false, message: "token is requires!"});
         const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY)
         if(!decoding) return res.status(403).send({status:false, message:"Invalid token!"});
-        const theUser = await Author.findById(decoding.userId);
+        if(!ObjectId.isValid(decoding.userId)) {
+            res.status(400).send({status: false, message: `${authorIdFromToken} is not a valid token id`})
+            return
+        }
         next()
     } catch (error) {
         res.status(500).send({status:false, message: error.message});
@@ -86,6 +95,10 @@ const auth4 = async(req,res,next)=>{
         if(!token) return res.send({status:false, message:"token is requires!"});
         const decoding = jwt.verify(token, process.env.JWT_SECRET_KEY)
         if(!decoding) return res.status(403).send({status:false, message:"Invalid token!"});
+        if(!ObjectId.isValid(decoding.userId)) {
+            res.status(400).send({status: false, message: `${authorIdFromToken} is not a valid token id`})
+            return
+        }
         const theUser = await Author.findById(decoding.userId);
         if(req.body.authorId != theUser._id) return res.status(403).send({status: false, message: "Not valid a author!"})
         next()
