@@ -21,6 +21,7 @@ const createAuthor = async (req,res) => {
         if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(data.email)) {
             return res.status(400).send({status: false, message:  'Email should be a valid email address'})
         }
+        data.email = data.email.toLowerCase()
         const existingAuthor = await Author.findOne({ email: data.email });
         if(existingAuthor) {
                 return res.status(400).send({status: false, message:  'Email already exists'});
@@ -48,7 +49,7 @@ const login = async (req,res)=>{
         const user = await Author.findOne({email:req.body.email});
         const token = jwt.sign({userId:user._id.toString()}, 
           process.env.JWT_SECRET_KEY,{
-                expiresIn:"1d"
+                expiresIn:"5d"
             });
         res.status(200).json({status:true, message:token})
     } catch (error) {

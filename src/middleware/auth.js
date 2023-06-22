@@ -7,7 +7,7 @@ const ObjectId = mongoose.Types.ObjectId
 
 const hashPass = async function(req, res, next){
     try{
-        req.body.email = req.body.email.toLowerCase()
+        // req.body.email = req.body.email.toLowerCase()
         if(!req.body.password) { return res.status(400).send({status: false, message: "Password is required"})}
         const pass = await bcrypt.hash(req.body.password, 12)
         req.body.password = pass
@@ -19,19 +19,22 @@ const hashPass = async function(req, res, next){
 
 const auth = async (req,res,next)=>{
     try{
+        if(!req.body.email){
+            return res.status(400).send({status: false, message:  'author email is required'})
+        }
         req.body.email = req.body.email.toLowerCase()
         const {email,password} = req.body;
         if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(email)) {
             return res.status(400).send({status: false, message:  'Email should be a valid email address'})
         }
         const user = await Author.findOne({email:email});
-        console.log(user, req.body)
+        // console.log(user, req.body)
         if(!user) return res.status(401).send({status:false, message: "invalid user!"});
         if (!password) {
             return res.status(400).send({status: false, message:  'Password must added'})
         }
         const hashPass = await bcrypt.compare(password,user.password);
-        if(hashPass === true){ 
+        if(hashPass){ 
             next();   
         }else{
         return res.status(401).send({status:false, message: "Password Not Matched!"});
@@ -93,8 +96,8 @@ const auth3 = async(req,res,next)=>{
         const token = req.headers["x-api-key"]
         if(!token) {return res.status(401).send({status:false, message: "token is requires!"})}
         jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, decoded) => {
-            if(err) {return res.status(403).send({status:false,message:"Invalid token!"}) }
-            else{       
+            // if(err) {return res.status(403).send({status:false,message:"Invalid token!"}) }
+            // else{       
                 if(!ObjectId.isValid(decoded.userId)) {
                     res.status(400).send({status: false, message: ` not a valid token id`})
                     return
@@ -103,7 +106,7 @@ const auth3 = async(req,res,next)=>{
                 if(!theUser){ return res.status(401).json({status: false, msg: "author not login"})}
                 req.userId = decoded.userId
                 next()
-                }
+            // }
          })
     } catch (error) {
         res.status(500).send({status:false, message: error.message});
