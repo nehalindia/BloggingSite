@@ -21,6 +21,8 @@ const createBlog = async function(req,res){
         if(!data.subcategory){
             return res.status(400).send({status: false, message:'blog subcategory is required'})
         }
+        if(!data.authorId) return res.status(400).send({status: false, message: "AuthorId is Missing"})
+        if(data.authorId != req.userId){ return res.status(401).send({status: false, message: "Not valid a author!"})}
         
         const blog = await Blog.create(data);
         res.status(201).send({status: true, message:'blog is succesfully created',data : blog })
@@ -57,13 +59,18 @@ const blogs = async (req, res) => {
     try {
         let blogId = req.params.blogId;
         let data = req.body;
-    
+        if(!ObjectId.isValid(req.params.blogId)) {
+            return res.status(400).send({status: false, message: `Blog id is not object`})  
+        }
         let blog = await Blog.findOne({ _id: blogId, isDeleted: false });
         if (!blog) {
             return res.status(404).send({ 
                 status: false,
                 message: 'Blog not found'
              });
+        }
+        if(blog.authorId != req.userId){ 
+            return res.status(401).send({status: false, message: "Not valid a author!"})
         }
 
         const updatedData = {
@@ -101,6 +108,9 @@ try{
     }
   let result = await Blog.findOne({_id:id})
   if(!result) {return res.status(404).send({status: false, message: "Id not found"})}
+  if(result.authorId != req.userId){ 
+    return res.status(401).send({status: false, message: "Not valid a author!"})
+    }
   if(result.isDeleted) {return res.status(404).send({status: false, message: "Blog is already Deleted"})}
 
   const dateUp = {deletedAt : new Date(), isDeleted :true}
@@ -126,6 +136,9 @@ try{
       }
   let result = await Blog.findOne(filters).select({_id:1,isDeleted:1})
   if(!result) {return res.status(404).send({status: false, msg: "Id not found"})}
+  if(result.authorId != req.userId){ 
+    return res.status(401).send({status: false, message: "Not valid a author!"})
+    }
   if(result.isDeleted) {return res.status(404).send({status: false, msg: "Blog is already Deleted"})}
   let id = result._id
 

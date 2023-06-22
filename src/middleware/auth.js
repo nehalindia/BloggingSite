@@ -62,10 +62,7 @@ const auth2 = async(req,res,next)=>{
         
         let id={}
         if(req.params.blogId){
-            if(!ObjectId.isValid(req.params.blogId)) {
-                res.status(400).send({status: false, message: `Blog id is not object`})
-                return
-            }
+            
             id = await Blog.findOne({_id:req.params.blogId})
             console.log(user._id, id.authorId)
         }else if(Object.keys(req.query).length !== 0){
@@ -96,7 +93,7 @@ const auth3 = async(req,res,next)=>{
         const token = req.headers["x-api-key"]
         if(!token) {return res.status(401).send({status:false, message: "token is requires!"})}
         jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, decoded) => {
-            if(err) {return res.status(404).send({status:false,message:"Invalid token!"}) }
+            if(err) {return res.status(403).send({status:false,message:"Invalid token!"}) }
             else{       
                 if(!ObjectId.isValid(decoded.userId)) {
                     res.status(400).send({status: false, message: ` not a valid token id`})
@@ -104,6 +101,7 @@ const auth3 = async(req,res,next)=>{
                 }
                 const theUser = await Author.findOne({_id:decoded.userId})
                 if(!theUser){ return res.status(401).json({status: false, msg: "author not login"})}
+                req.userId = decoded.userId
                 next()
                 }
          })
@@ -115,7 +113,7 @@ const auth3 = async(req,res,next)=>{
 const auth4 = async(req,res,next)=>{
     try {
         const token = req.headers["x-api-key"]
-        if(!req.body.authorId) return res.status(400).send({status: false, message: "AuthorId is Missing"})
+        
         if(!token) return res.status(401).send({status:false, message:"token is requires!"});
 
         jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, decoded) => {
@@ -127,7 +125,7 @@ const auth4 = async(req,res,next)=>{
                 }
                 const theUser = await Author.findOne({_id:decoded.userId})
                 if(!theUser){ return res.status(401).json({status: false, msg: "author not login"}) }
-                if(req.body.authorId != theUser._id.toString()){ return res.status(404).send({status: false, message: "Not valid a author!"})}
+                
                 next()               
             }
          })

@@ -7,13 +7,13 @@ const {auth,auth2,hashPass,auth3,auth4} = require('../middleware/auth')
 
 router.post('/authors',hashPass,createAuthor)
 router.post('/login', auth,login)
-router.post('/blogs',auth4,createBlog)
+router.post('/blogs',auth3,createBlog)
 
 router.get('/blogs',auth3,blogs)
-router.put('/blogs/:blogId',auth2,updateBlog)
+router.put('/blogs/:blogId',auth3,updateBlog)
 
-router.delete('/blogs/:blogId',auth2, deleteBlog)
-router.delete('/blogs',auth2, deleteBlogQuery)
+router.delete('/blogs/:blogId',auth3, deleteBlog)
+router.delete('/blogs',auth3, deleteBlogQuery)
 
 
 
