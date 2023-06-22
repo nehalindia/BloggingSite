@@ -1,5 +1,6 @@
 const Author = require('../models/authorModel')
 const jwt = require('jsonwebtoken');
+require('dotenv').config
 
 // Create Author
 const createAuthor = async (req,res) => {
